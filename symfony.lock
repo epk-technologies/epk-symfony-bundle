@@ -234,6 +234,9 @@
             "tests/bootstrap.php"
         ]
     },
+    "symfony/polyfill-ctype": {
+        "version": "v1.22.1"
+    },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.22.1"
     },
@@ -271,6 +274,9 @@
     },
     "symfony/test-pack": {
         "version": "v1.0.7"
+    },
+    "symfony/translation-contracts": {
+        "version": "v2.4.0"
     },
     "symfony/var-dumper": {
         "version": "v5.2.7"
