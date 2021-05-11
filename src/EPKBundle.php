@@ -2,6 +2,7 @@
 namespace EPKTechnologies\EPKBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use function dirname;
 
 /**
  * @author Jan Egert <jan.egert@epk-technologies.com>
@@ -10,6 +11,6 @@ class EPKBundle extends Bundle
 {
     public function getPath(): string
     {
-        return \dirname(__DIR__);
+        return dirname(__DIR__);
     }
 }
