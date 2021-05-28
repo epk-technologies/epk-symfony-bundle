@@ -11,5 +11,5 @@ interface SlugConflictCheckInterface
     /**
      * Check if slug exists.Returns TRUE if in conflict with another slug, else FALSE
      */
-    public function __invoke(string $slug): bool;
+    public function __invoke(string $slug, array $context = []): bool;
 }

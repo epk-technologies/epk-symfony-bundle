@@ -119,7 +119,7 @@ class SlugGenerator
      * When there's maximal length defined, for example 4, default slug will be 'some'.
      * When 'some' exists, generator will try 'som1' ... 'som2' ... until finds non-existing slug with given length.
      */
-    function generateSlug(string $from_text): string
+    function generateSlug(string $from_text, array $context = []): string
     {
         $slug = $this->slugger
             ->slug($from_text, $this->separator)
@@ -141,7 +141,7 @@ class SlugGenerator
         $iteration = 0;
         $base_slug = $slug;
 
-        while($this->existence_checker->__invoke((string)$slug)){
+        while($this->existence_checker->__invoke((string)$slug, $context)){
             $iteration++;
             if(
                 $this->max_iterations !== self::UNLIMITED_ITERATIONS &&
