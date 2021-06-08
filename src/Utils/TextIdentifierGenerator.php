@@ -1,22 +1,22 @@
 <?php declare(strict_types=1);
 namespace EPKTechnologies\EPKBundle\Utils;
 
-use EPKTechnologies\EPKBundle\Utils\SlugGenerator\SlugConflictCheckInterface;
-use EPKTechnologies\EPKBundle\Utils\SlugGenerator\SlugGeneratorException;
+use EPKTechnologies\EPKBundle\Utils\TextIdentifierGenerator\TextIdentifierConflictCheckInterface;
+use EPKTechnologies\EPKBundle\Utils\TextIdentifierGenerator\TextIdentifierGeneratorException;
 use InvalidArgumentException;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
- * Slug (like some-transliterated-phrase) generator with length limiting and duplicities checking
+ * Text identifier (like some-transliterated-phrase) generator with length limiting and duplicities checking
  *
  * @author Jan Egert <jan.egert@epk-technologies.com>
  */
-class SlugGenerator
+class TextIdentifierGenerator
 {
     const UNLIMITED_LENGTH = 0;
     const DEFAULT_SEPARATOR = '-';
-    const DEFAULT_LENGTH = self::UNLIMITED_LENGTH;
+    const DEFAULT_LENGTH = 40;
     const DEFAULT_MAX_ITERATIONS = 100;
     const UNLIMITED_ITERATIONS = 0;
 
@@ -37,11 +37,11 @@ class SlugGenerator
      */
     protected int $max_iterations = self::DEFAULT_MAX_ITERATIONS;
 
-    protected ?SlugConflictCheckInterface $existence_checker = null;
+    protected ?TextIdentifierConflictCheckInterface $existence_checker = null;
 
     function __construct(
         int $max_length = null,
-        SlugConflictCheckInterface $existence_checker = null,
+        TextIdentifierConflictCheckInterface $existence_checker = null,
         SluggerInterface $slugger = null,
     )
     {
@@ -93,17 +93,17 @@ class SlugGenerator
     }
 
     /**
-     * @return SlugConflictCheckInterface|null
+     * @return TextIdentifierConflictCheckInterface|null
      */
-    public function getExistenceChecker(): ?SlugConflictCheckInterface
+    public function getExistenceChecker(): ?TextIdentifierConflictCheckInterface
     {
         return $this->existence_checker;
     }
 
     /**
-     * @param SlugConflictCheckInterface|null $existence_checker
+     * @param TextIdentifierConflictCheckInterface|null $existence_checker
      */
-    public function setExistenceChecker(?SlugConflictCheckInterface $existence_checker): void
+    public function setExistenceChecker(?TextIdentifierConflictCheckInterface $existence_checker): void
     {
         $this->existence_checker = $existence_checker;
     }
@@ -111,7 +111,7 @@ class SlugGenerator
 
 
     /**
-     * Generates slug from text with possibility to check if slug already exists and generate unique slug ending with numbers
+     * Generates identifier from text with possibility to check if identifier already exists and generate unique identifier ending with numbers
      * Example:
      * When original text is 'Some phrase', default slug will be 'some-phrase'
      * When existence_checker is defined and returns TRUE = 'some-phrase' already exists,
@@ -119,7 +119,7 @@ class SlugGenerator
      * When there's maximal length defined, for example 4, default slug will be 'some'.
      * When 'some' exists, generator will try 'som1' ... 'som2' ... until finds non-existing slug with given length.
      */
-    function generateSlug(string $from_text, array $context = []): string
+    function generateIdentifier(string $from_text, array $context = []): string
     {
         $slug = $this->slugger
             ->slug($from_text, $this->separator)
@@ -127,7 +127,7 @@ class SlugGenerator
             ->trim($this->separator);
 
         if($slug->length() === 0){
-            throw new SlugGeneratorException("Wrong text format, generated slug may not be empty", SlugGeneratorException::CODE_TOO_SHORT);
+            throw new TextIdentifierGeneratorException("Wrong text format, generated slug may not be empty", TextIdentifierGeneratorException::CODE_TOO_SHORT);
         }
 
         if($this->max_length !== self::UNLIMITED_LENGTH){
@@ -147,9 +147,9 @@ class SlugGenerator
                 $this->max_iterations !== self::UNLIMITED_ITERATIONS &&
                 $iteration >= $this->max_iterations
             ){
-                throw new SlugGeneratorException(
-                    "Failed to generate unique slug in {$iteration} iterations.",
-                    SlugGeneratorException::CODE_TOO_MANY_ITERATIONS
+                throw new TextIdentifierGeneratorException(
+                    "Failed to generate unique identifier in {$iteration} iterations.",
+                    TextIdentifierGeneratorException::CODE_TOO_MANY_ITERATIONS
                 );
             }
 
@@ -160,9 +160,9 @@ class SlugGenerator
 
             $remaining_slug_length = $this->max_length - strlen((string)$iteration);
             if($remaining_slug_length <= 0){
-                throw new SlugGeneratorException(
+                throw new TextIdentifierGeneratorException(
                     "Original text is too short for further iterations",
-                    SlugGeneratorException::CODE_TOO_SHORT
+                    TextIdentifierGeneratorException::CODE_TOO_SHORT
                 );
             }
 
@@ -177,6 +177,6 @@ class SlugGenerator
 
     function __invoke(string $from_text): string
     {
-        return $this->generateSlug($from_text);
+        return $this->generateIdentifier($from_text);
     }
 }
