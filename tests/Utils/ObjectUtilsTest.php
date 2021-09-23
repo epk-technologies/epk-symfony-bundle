@@ -170,12 +170,7 @@ class ObjectUtilsTest extends TestCase
             int: 2
         );
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf("Invalid object class with key '1'. %s expected, %s given",
-            ObjectUtilsTestObject::class,
-            ObjectUtilsTestObject2::class
-        ));
-        ObjectUtils::associateObjects([$o1, $o2], 'public_string');
+        $this->assertEquals(['pub1' => $o1, 'pub2' => $o2], ObjectUtils::associateObjects([$o1, $o2], 'public_string'));
     }
 
 }
